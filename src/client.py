@@ -17,7 +17,10 @@ The counter will prevent any relayed attacks because if an attack is relayed, no
 import RPi.GPIO as GPIO
 from mfrc522 import SimpleMFRC522
 from security import encrypt, decrypt, change_key
+from servo import open_servo
+from keypad import get_keypad_input
 import socket
+from time import sleep
 
 if __name__ == "__main__":
 
@@ -29,7 +32,7 @@ if __name__ == "__main__":
     # Create a socket object
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    SERVER_HOST, SERVER_PORT = "129.161.117.229", 1024
+    SERVER_HOST, SERVER_PORT = "129.161.117.229", 1024 # the server device IP on the RPI network
 
     # Connect to server
     client_socket.connect((SERVER_HOST, SERVER_PORT))
@@ -52,7 +55,8 @@ if __name__ == "__main__":
             # now wait for password input HERE 
             # -----
             # *****
-            password_input = "4321" # temp password
+            # password_input = "4321" # temp password
+            password_input = get_keypad_input() 
 
             # ------ 
 
@@ -60,7 +64,7 @@ if __name__ == "__main__":
             message = "{}:{}".format(text.strip(), password_input).rstrip(":").strip()
 
             # encrypt using symmetric key
-            encrypted_message = encrypt(message)
+            encrypted_message = encrypt(message, key)
 
             # send the message to the server
             # Send message to server
@@ -72,11 +76,14 @@ if __name__ == "__main__":
                 print('Received from server:', data.decode())
                 message_received = data.decode()
                 decrypted_message = decrypt(message_received, key).rstrip(":").strip()
-                print("Decrupted message:{}|".format(decrypted_message))
+                print("Decrypted message:{}|".format(decrypted_message))
 
                 if (decrypted_message == "V3r1f13D-" + message + "!"):
                     print("[SUCCESS] Received valid authentication!")
                     key, count = change_key(key, count)
+
+                    # code to turn servo here
+                    open_servo()
                 else:
                     print(message)
                     print("[ERROR] Failed to validate the user.")
@@ -85,5 +92,5 @@ if __name__ == "__main__":
             
         # # after the scan
         finally:
-            print("scanned")
-            # GPIO.cleanup()
+            print("[EXIT]")
+            GPIO.cleanup()
