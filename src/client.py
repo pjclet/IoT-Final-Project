@@ -32,11 +32,11 @@ if __name__ == "__main__":
     # Create a socket object
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    SERVER_HOST, SERVER_PORT = "129.161.117.229", 1024 # the server device IP on the RPI network
+    SERVER_HOST, SERVER_PORT = "128.113.218.172", 1024 # the server device IP on the RPI network
 
     # Connect to server
     client_socket.connect((SERVER_HOST, SERVER_PORT))
-    
+    print("[SUCCESS] Client connected to server.") 
     # create the card reader object
     # reader = SimpleMFRC522()
 
@@ -84,6 +84,7 @@ if __name__ == "__main__":
                     key, count = change_key(key, count)
 
                     # code to turn servo here
+                    GPIO.cleanup()
                     open_servo()
                 else:
                     print(message)
@@ -94,4 +95,4 @@ if __name__ == "__main__":
         # # after the scan
         finally:
             print("[EXIT]")
-            # GPIO.cleanup()
+            GPIO.cleanup()

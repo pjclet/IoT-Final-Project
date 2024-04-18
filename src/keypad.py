@@ -1,7 +1,23 @@
 from pad4pi import rpi_gpio
+import time
+
+current = ""
+
+def add_current(key):
+    global current
+    if len(current) > 4:
+        print("[KEYPAD] More than 4 keypresses registered. Comparing " + current + "...")
+    else:
+        current += str(key)
 
 def get_key(key):
-    return key
+    try:
+        if key != None:
+            print("[KEYPAD] Key received: " + str(key))
+            int_key = int(key)
+            add_current(key)
+    except ValueError:
+        print("[KEYPAD] Invalid key received: " + str(key))
 
 def printKey(key):
     print(key)
@@ -20,19 +36,17 @@ def get_keypad_input():
 
     factory = rpi_gpio.KeypadFactory()
     keypad = factory.create_keypad(keypad=KEYPAD, row_pins=ROW_PINS, col_pins=COL_PINS)
-    
     # register key handler
-    final_password = ""
-    while len(final_password) < 4:
-        current_input = keypad.registerKeyPressHandler(get_key)
-        if (current_input):
-            final_password = final_password + str(current_input).strip()
-            print("[KEYPAD] Received input: {}".format(current_input))
-    
-    print("[KEYPAD] Final password: {}, length: {}".format(final_password, len(final_password)))
-    return final_password
-
-
+    final = ""
+    keypad.registerKeyPressHandler(get_key)
+    global current
+    while len(current) < 4:
+        time.sleep(1)
+    print("[KEYPAD] Final password: {}, length: {}".format(current, len(current)))
+    final = current
+    current = ""
+    keypad.clearKeyPressHandlers()
+    return final
 
 if __name__ == '__main__':
     KEYPAD = [
