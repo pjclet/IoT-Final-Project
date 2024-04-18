@@ -38,10 +38,10 @@ if __name__ == "__main__":
     client_socket.connect((SERVER_HOST, SERVER_PORT))
     
     # create the card reader object
-    reader = SimpleMFRC522()
+    # reader = SimpleMFRC522()
 
     while True:
-
+        reader = SimpleMFRC522()
         # # Close client socket
         # client_socket.close()
 
@@ -56,6 +56,7 @@ if __name__ == "__main__":
             # -----
             # *****
             # password_input = "4321" # temp password
+            GPIO.cleanup()
             password_input = get_keypad_input() 
 
             # ------ 
@@ -93,4 +94,4 @@ if __name__ == "__main__":
         # # after the scan
         finally:
             print("[EXIT]")
-            GPIO.cleanup()
+            # GPIO.cleanup()

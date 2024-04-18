@@ -25,10 +25,11 @@ def get_keypad_input():
     final_password = ""
     while len(final_password) < 4:
         current_input = keypad.registerKeyPressHandler(get_key)
-        final_password = final_password + str(current_input).strip()
-        print("[KEYPAD] Received input: {}".format(current_input))
+        if (current_input):
+            final_password = final_password + str(current_input).strip()
+            print("[KEYPAD] Received input: {}".format(current_input))
     
-    print("[KEYPAD] Final password: {}".format(final_password))
+    print("[KEYPAD] Final password: {}, length: {}".format(final_password, len(final_password)))
     return final_password
 
 
